@@ -7,6 +7,7 @@ public class GamePanel extends JPanel implements MouseMotionListener, MouseListe
 
     private int x, y;
     private int cardsInDeck = 8;
+    public static int deckSize = 8;
     // private int cardx, cardy;
     private Cards selected = null;
     // private Cards deck[] = new Cards[cardsInDeck];
@@ -19,8 +20,9 @@ public class GamePanel extends JPanel implements MouseMotionListener, MouseListe
     // initialize button
     private JButton battleButton;
 
-    private JLabel[] cardBoxes = new JLabel[5];
-    private ArrayList<Cards> selectedCards = new ArrayList<>();
+    private JLabel[] cardBoxes = new JLabel[deckSize + 1];
+    private Cards[] selectedCards = new Cards[8];
+    private int cardsSelected = 0;
 
     private JLabel instructionLabel;
 
@@ -31,7 +33,8 @@ public class GamePanel extends JPanel implements MouseMotionListener, MouseListe
         this.addMouseListener(this);
 
         instructionLabel = new JLabel(
-                "This is a card-based auto battler. Drag exactly four cards into the boxes to take into battle, then press Start Battle");
+                "This is a card-based auto battler. Drag exactly " + deckSize
+                        + " cards into the boxes to take into battle, then press Start Battle");
         instructionLabel.setHorizontalAlignment(SwingConstants.CENTER);
         instructionLabel.setFont(new Font("Arial", Font.BOLD, 16));
         this.add(instructionLabel, BorderLayout.NORTH);
@@ -42,9 +45,9 @@ public class GamePanel extends JPanel implements MouseMotionListener, MouseListe
         // create the players deck
         player = new Player();
 
-        for (int i = 0; i < 5; i++) {
+        for (int i = 0; i < deckSize + 1; i++) {
             cardBoxes[i] = new JLabel();
-            cardBoxes[i].setBounds(320 + i * 150, 350, 100, 200);
+            cardBoxes[i].setBounds(50 + i * 110, 350, 100, 200);
             cardBoxes[i].setBorder(BorderFactory.createLineBorder(Color.BLACK));
             this.add(cardBoxes[i]);
         }
@@ -55,7 +58,7 @@ public class GamePanel extends JPanel implements MouseMotionListener, MouseListe
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (e.getSource() == battleButton) {
-                    if (selectedCards.size() == 4) {
+                    if (cardsSelected == deckSize) {
 
                         removeAll();
                         revalidate();
@@ -66,7 +69,7 @@ public class GamePanel extends JPanel implements MouseMotionListener, MouseListe
                         revalidate();
                         repaint();
                     } else {
-                        System.out.println("Please select exactly 4 cards for the battle.");
+                        System.out.println("Please select exactly " + deckSize + " cards for the battle.");
                     }
                 }
             }
@@ -115,19 +118,60 @@ public class GamePanel extends JPanel implements MouseMotionListener, MouseListe
     public void mouseReleased(MouseEvent e) {
 
         if (selected != null) {
-            for (int i = 0; i < 4; i++) {
+            boolean putInBox = false;
+            for (int i = 0; i < deckSize; i++) {
                 if (e.getX() >= cardBoxes[i].getX() && e.getX() <= cardBoxes[i].getX() + cardBoxes[i].getWidth()
                         && e.getY() >= cardBoxes[i].getY()
                         && e.getY() <= cardBoxes[i].getY() + cardBoxes[i].getHeight()) {
 
+                    if (selectedCards[i] != null) {
+
+                        selectedCards[i].setX(selectedCards[i].getOriginalX());
+                        selectedCards[i].setY(selectedCards[i].getOriginalY());
+
+                        removeCard(selectedCards[i]);
+                    }
+
+                    // remove card from current position in selection if applicable to support
+                    // reordering
+                    if (selected.getSelectionIndex() != -1)
+                        removeCard(selected);
+
                     // put the card in the box
-                    cardBoxes[i].setIcon(new ImageIcon(selected.getImage()));
-                    selectedCards.add(selected);
+                    selected.setX(cardBoxes[i].getX());
+                    selected.setY(cardBoxes[i].getY());
+                    selected.setSelectionIndex(i);
+                    selectedCards[i] = selected;
+                    cardsSelected++;
+
+                    putInBox = true;
                 }
             }
+            if (!putInBox) { // remove selected card from selectedCards
+
+                if (selected.getSelectionIndex() != -1)
+                    removeCard(selected);
+
+                selected.setX(selected.getOriginalX());
+                selected.setY(selected.getOriginalY());
+            }
+
             selected = null;
             repaint();
         }
+        System.out.println("Update");
+        for (Cards card : selectedCards) {
+
+            if (card != null)
+                System.out.println(card.getHealth() + " " + card.getAttack());
+        }
+    }
+
+    public void removeCard(Cards card) {
+
+        selectedCards[card.getSelectionIndex()] = null;
+        card.setSelectionIndex(-1);
+        cardsSelected--;
     }
 
     public void mouseDragged(MouseEvent e) {
