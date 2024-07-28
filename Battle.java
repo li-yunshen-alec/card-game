@@ -3,16 +3,17 @@ import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
 
-public class Battle extends JPanel implements ActionListener{
+public class Battle extends JPanel implements ActionListener {
 
-    private Battler player; //= new Player(); <--- player is made in the constructor
+    private Battler player; // = new Player(); <--- player is made in the constructor
     private Battler enemy = new Enemy();
 
     private Battler playersArray[] = new Battler[2];
 
-    private int round = 1;    // round starts at 1 so player goes first in any battle, if round starts as 0, the enemy will go first
-    private int turn;         // player or enemys turn to act
-    private int altTurn;      // the party that is not currently acting
+    private int round = 1; // round starts at 1 so player goes first in any battle, if round starts as 0,
+                           // the enemy will go first
+    private int turn; // player or enemys turn to act
+    private int altTurn; // the party that is not currently acting
     private boolean isWon = false;
 
     private int speed = 1000; // how many milliseconds before a card acts, set lower for a faster game
@@ -20,8 +21,8 @@ public class Battle extends JPanel implements ActionListener{
     private JLabel messageLabel;
     private JLabel instructionLabel;
     private Timer timer;
-    //private Cards[] playerSelectedCards;
-    
+    // private Cards[] playerSelectedCards;
+
     //
     private JPanel cardPanel = new JPanel() {
         protected void paintComponent(Graphics g) {
@@ -29,31 +30,32 @@ public class Battle extends JPanel implements ActionListener{
 
             // display player's cards
             for (int i = 0; i < GamePanel.deckSize; i++) {
-                player.deck[i].setX(20 + i * 106);
-                player.deck[i].setY(740);
-                
+                player.hand[i].setX(20 + i * 106);
+                player.hand[i].setY(740);
+
                 // moves the currently acting card upwards to make it more visible
                 if (turn == 0 && i == playersArray[turn].cardsUsed)
-                    player.deck[i].setY(720);
-                
-                player.deck[i].myDraw(g);
-                drawCardInfo(g, player.deck[i]);
+                    player.hand[i].setY(720);
+
+                player.hand[i].myDraw(g);
+                drawCardInfo(g, player.hand[i]);
             }
 
             // display enemy's cards
             for (int i = 0; i < GamePanel.deckSize; i++) {
-                enemy.deck[i].setX(1200 + i * -106);
-                enemy.deck[i].setY(100);
+                enemy.hand[i].setX(1200 + i * -106);
+                enemy.hand[i].setY(100);
 
                 // moves the currently acting card upwards to make it more visible
                 if (turn == 1 && i == playersArray[turn].cardsUsed)
-                    enemy.deck[i].setY(80);
+                    enemy.hand[i].setY(80);
 
-                enemy.deck[i].myDraw(g);
-                drawCardInfo(g, enemy.deck[i]);
+                enemy.hand[i].myDraw(g);
+                drawCardInfo(g, enemy.hand[i]);
             }
 
-            // if is players turn and the card represented by i is the card currently acting, setY to 800 instead
+            // if is players turn and the card represented by i is the card currently
+            // acting, setY to 800 instead
         }
 
         // display health and attack
@@ -67,9 +69,9 @@ public class Battle extends JPanel implements ActionListener{
 
     public Battle(Player player, Cards[] playerSelectedCards) {
 
-        // check if cards are selected correctly
-        for (Cards card : playerSelectedCards) {
-            System.out.println(card.getHealth() + " " + card.getAttack());
+        // put playerSelectedCards into player.hand
+        for (int i = 0; i < playerSelectedCards.length; i++) {
+            player.hand[i] = playerSelectedCards[i];
         }
 
         setLayout(new BorderLayout());
@@ -90,18 +92,15 @@ public class Battle extends JPanel implements ActionListener{
 
         // get player and cards
         this.player = player;
-        //this.playerSelectedCards = playerSelectedCards;
-
+        // this.playerSelectedCards = playerSelectedCards;
 
         playersArray[0] = player;
         playersArray[1] = enemy;
-        
-        timer = new Timer(speed, this);
-        timer.start(); 
-        
-        
-    }
 
+        timer = new Timer(speed, this);
+        timer.start();
+
+    }
 
     private void performAttack(Cards attackerCard, Cards defenderCard) {
 
@@ -109,34 +108,34 @@ public class Battle extends JPanel implements ActionListener{
     }
 
     public void actionPerformed(ActionEvent e) {
-        
+
         if (e.getSource() == timer) {
-        
-        // if round is even, it is the player's turn, if round is odd, its the enemy's
-        // turn. turn is 0 or 1 to make using an array easier
-        
+
+            // if round is even, it is the player's turn, if round is odd, its the enemy's
+            // turn. turn is 0 or 1 to make using an array easier
+
             round++;
-            altTurn = (round+1)%2;
+            altTurn = (round + 1) % 2;
             if (round % 2 == 0) {
                 turn = 0;
-                messageLabel.setText("Player card " + player.cardsUsed + " attacks enemy card " + enemy.cardsUsed);  
-                System.out.println("Playerturn");    
-            }
-            else {
+                messageLabel.setText("Player card " + player.cardsUsed + " attacks enemy card " + enemy.cardsUsed);
+                System.out.println("Playerturn");
+            } else {
                 turn = 1;
                 messageLabel.setText("Enemy card " + enemy.cardsUsed + " attacks player card " + player.cardsUsed);
-                System.out.println("Enemyturn");  
+                System.out.println("Enemyturn");
             }
 
-
             System.out.println(turn);
-            performAttack(playersArray[turn].deck[playersArray[turn].cardsUsed], playersArray[altTurn].deck[playersArray[altTurn].cardsUsed]);
+            performAttack(playersArray[turn].hand[playersArray[turn].cardsUsed],
+                    playersArray[altTurn].hand[playersArray[altTurn].cardsUsed]);
 
             // moves card currently acting so the game is more clear and easy to follow
-            playersArray[turn].deck[playersArray[turn].cardsUsed].setY(playersArray[turn].deck[playersArray[turn].cardsUsed].getY()+100); 
+            playersArray[turn].hand[playersArray[turn].cardsUsed]
+                    .setY(playersArray[turn].hand[playersArray[turn].cardsUsed].getY() + 100);
 
             // removes attacked card if is has no health left
-            if (playersArray[altTurn].deck[playersArray[altTurn].cardsUsed].getHealth() <= 0) {
+            if (playersArray[altTurn].hand[playersArray[altTurn].cardsUsed].getHealth() <= 0) {
                 messageLabel.setText(playersArray[altTurn] + "card defeated!");
                 playersArray[altTurn].cardsUsed++;
             }
