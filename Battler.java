@@ -10,7 +10,7 @@ public abstract class Battler {
 
     private String name;
     // players stats
-    private int health = 0;
+    private int health = 1000;
     private int ambrosia = 0;
     private int shield = 0;
 
@@ -18,7 +18,7 @@ public abstract class Battler {
         this.name = name;
         // create the players deck
         for (int i = 0; i < GamePanel.deckSize; i++) {
-            deck.add(new Cards(i * 150 + 20, 600));
+            deck.add(new Cards(i * 110 + 200, 600));
             System.out.println("hello");
             System.out.println(i);
         }

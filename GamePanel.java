@@ -8,10 +8,7 @@ public class GamePanel extends JPanel implements MouseMotionListener, MouseListe
     private int x, y;
     private int cardsInDeck = 8;
     public static int deckSize = 8;
-    // private int cardx, cardy;
     private Cards selected = null;
-    // private Cards deck[] = new Cards[cardsInDeck];
-    // private ImageIcon test = new ImageIcon("card.png");
     private int offsetX, offsetY;
 
     // initialize player
@@ -33,6 +30,27 @@ public class GamePanel extends JPanel implements MouseMotionListener, MouseListe
     public GamePanel() {
         this.setLayout(new BorderLayout());
 
+        initUserInterface();
+        initButtons();
+    }
+
+    @Override
+    public void paintComponent(Graphics g) {
+        super.paintComponent(g);
+
+        g.drawOval(x - 20, y - 20, 40, 40);
+
+        for (Cards card : player.deck) {
+            card.myDraw(g);
+        }
+        for (Cards card : selectedCards) {
+            if (card != null)
+                card.myDraw(g);
+        }
+    }
+
+    private void initUserInterface() {
+
         this.addMouseMotionListener(this);
         this.addMouseListener(this);
 
@@ -53,31 +71,20 @@ public class GamePanel extends JPanel implements MouseMotionListener, MouseListe
 
         for (int i = 0; i < deckSize + 1; i++) {
             cardBoxes[i] = new JLabel();
-            cardBoxes[i].setBounds(50 + i * 110, 350, 100, 200);
+            cardBoxes[i].setBounds(200 + i * 110, 350, 100, 200);
             cardBoxes[i].setBorder(BorderFactory.createLineBorder(Color.BLACK));
             this.add(cardBoxes[i]);
         }
+    }
+
+    private void initButtons() {
 
         // create the battle button
         battleButton = new JButton("Start Battle");
         battleButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (e.getSource() == battleButton) {
-                    if (cardsSelected == deckSize) {
-
-                        removeAll();
-                        revalidate();
-                        repaint();
-
-                        Battle battle = new Battle(player, selectedCards);
-                        add(battle, BorderLayout.CENTER);
-                        revalidate();
-                        repaint();
-                    } else {
-                        System.out.println("Please select exactly " + deckSize + " cards for the battle.");
-                    }
-                }
+                startBattle();
             }
         });
 
@@ -91,12 +98,7 @@ public class GamePanel extends JPanel implements MouseMotionListener, MouseListe
             @Override
             public void actionPerformed(ActionEvent e) {
                 System.out.println("left button");
-                for (Cards card : player.deck) {
-
-                    card.setX(card.getX() + 50);
-                }
-                repaint();
-                scrollValue += 50;
+                scroll(50);
             }
         });
         this.add(leftButton, BorderLayout.WEST);
@@ -107,31 +109,36 @@ public class GamePanel extends JPanel implements MouseMotionListener, MouseListe
             @Override
             public void actionPerformed(ActionEvent e) {
                 System.out.println("right button");
-                for (Cards card : player.deck) {
-
-                    card.setX(card.getX() - 50);
-                }
-                repaint();
-                scrollValue -= 50;
+                scroll(-50);
             }
         });
         this.add(rightButton, BorderLayout.EAST);
     }
 
-    public void paintComponent(Graphics g) {
-        super.paintComponent(g);
+    public void scroll(int scrollValue) {
 
-        g.drawOval(x - 20, y - 20, 40, 40);
-        /*
-         * test.paintIcon(this, g, cardx - 60, cardy - 100);
-         * deck[1].myDraw(g);
-         */
         for (Cards card : player.deck) {
-            card.myDraw(g);
+
+            card.setX(card.getX() + scrollValue);
         }
-        for (Cards card : selectedCards) {
-            if (card != null)
-                card.myDraw(g);
+        repaint();
+        this.scrollValue += scrollValue;
+    }
+
+    private void startBattle() {
+
+        if (cardsSelected == deckSize) {
+
+            removeAll();
+            revalidate();
+            repaint();
+
+            Battle battle = new Battle(player, selectedCards);
+            add(battle, BorderLayout.CENTER);
+            revalidate();
+            repaint();
+        } else {
+            System.out.println("Please select exactly " + deckSize + " cards for the battle.");
         }
     }
 
@@ -236,10 +243,10 @@ public class GamePanel extends JPanel implements MouseMotionListener, MouseListe
     public void removeGaps() {
 
         // remove gaps between cards in the deck
-        int deckX = 20;
+        int deckX = 200;
         for (Cards card : player.deck) {
             card.setX(deckX + scrollValue);
-            deckX += 150;
+            deckX += 110;
         }
     }
 
@@ -256,11 +263,8 @@ public class GamePanel extends JPanel implements MouseMotionListener, MouseListe
 
         if (selected != null) {
 
-            x = e.getX();
-            y = e.getY();
-
-            selected.setX(x - offsetX);
-            selected.setY(y - offsetY);
+            selected.setX(e.getX() - offsetX);
+            selected.setY(e.getY() - offsetY);
         }
         // only if the mouse is on top of the card then the card moves
         /*
