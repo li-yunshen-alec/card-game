@@ -22,7 +22,7 @@ public abstract class Battler {
         this.name = name;
         // create the players deck
         for (int i = 0; i < 10; i++) {
-            deck.add(new Cards(i * 110 + 75, 420, 50, 50));
+            deck.add(new Cards(i * 120 + 40, 420, 70, 30));
             System.out.println("hello");
             System.out.println(i);
         }
@@ -30,7 +30,7 @@ public abstract class Battler {
 
     // Setters -----------------------------------
     public void setShield(int shield) {
-        this.shield = shield;
+        this.shield = this.shield + shield;
     }
 
     public void setAmbrosia(int ambrosia) {

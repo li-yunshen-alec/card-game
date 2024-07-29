@@ -13,6 +13,7 @@ public class Cards implements MouseMotionListener {
     private int ambrosiaCost = 0;
     private int ambrosiaGive = 0;
     private int vulnerableStacks = 0;
+    private int shield = 0;
     private int originalX, originalY;
     private int selectionIndex = -1;
     private Scanner filesc;
@@ -29,7 +30,6 @@ public class Cards implements MouseMotionListener {
     
     public Cards(int x, int y, int common, int rare) {
         
-
         this.x = x;
         this.y = y;
         this.originalX = x;
@@ -43,13 +43,13 @@ public class Cards implements MouseMotionListener {
         if (rarity <= common) {
             rand = (int) (Math.random() * 4 + 1);
             rarity = 0;
-            cardtest = new ImageIcon("images/card.png");
+            cardtest = new ImageIcon("images/card4.png");
         } else if (rarity <= common+rare) {
             rand = (int) (Math.random() * 2 + 1);
             rarity = 1;
-            cardtest = new ImageIcon("images/card2.png");
+            cardtest = new ImageIcon("images/card5.png");
         }
-        
+
         try {
             // get card details from file
             filesc = new Scanner (new File("cards/card"+rarity+"0"+ rand +".txt"));
@@ -70,11 +70,12 @@ public class Cards implements MouseMotionListener {
         
         // assign the data from the file to variables in the class
         description = cardDataArray[1].split(":");
-        name = cardDataArray[4].substring(5);
+        name = (cardDataArray[4].substring(5)).toUpperCase();
         attack = Integer.parseInt(cardDataArray[5].substring(7));
         ambrosiaCost = Integer.parseInt(cardDataArray[6].substring(13));
         ambrosiaGive = Integer.parseInt(cardDataArray[7].substring(13));
         vulnerableStacks = Integer.parseInt(cardDataArray[12].substring(17));
+        shield = Integer.parseInt(cardDataArray[11].substring(12));
 
         filesc.close();
     }
@@ -98,7 +99,7 @@ public class Cards implements MouseMotionListener {
     }
 
     public boolean isInside(int mx, int my) {
-        return (x - 10 < mx && y - 10 < my && x + 110 > mx && y + 210 > my);
+        return (x - 10 < mx && y - 10 < my && x + CARDWIDTH > mx && y + CARDHIGHT > my);
     }
 
     public void setHealth(int newHealth) {
@@ -147,7 +148,9 @@ public class Cards implements MouseMotionListener {
     public int getAmbrosia() {
         return ambrosiaGive;
     }
-
+    public int getShield() {
+        return shield;
+    }
     public int getVulnerableStacks() {
         return vulnerableStacks;
     }
@@ -164,23 +167,34 @@ public class Cards implements MouseMotionListener {
         Graphics2D g2d = (Graphics2D)g;
         g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 
+        
         // cardtest.paintIcon(null, g, x - 60, y - 100);
         g.drawImage(cardtest.getImage(), x, y, null);
 
         // Draw the health and attack values
-        g.setColor(Color.BLACK);
+        g.setColor(Color.WHITE);
+        g.setFont(Main.Lexend18);
+
+        // draw the name of the card
+        g2d.translate(getX() + 97, getY() + 8);
+        g2d.rotate(Math.toRadians(90));
+        g2d.drawString(name, 0, 0);
+        g2d.rotate(Math.toRadians(-90));
+        g2d.translate(-(getX() + 97), -(getY() + 8));
+
         g.setFont(Main.Lexend12);
         
         // write the description of the card
-        count = 50;
+        count = 120;
         for (String line : description) {    
             //System.out.println("count: " + count);
             g.drawString(line, getX() + 15, getY() + count);
-            count = count+20;
+            count = count+17;
         }
 
         if (ambrosiaCost > 0) {
-            g.drawString(""+ambrosiaCost, getX() + 8, getY() + 17);
+            g.setColor(Color.BLACK);
+            g.drawString(""+ambrosiaCost, getX() + 11, getY() + 17);
 
         }
 
