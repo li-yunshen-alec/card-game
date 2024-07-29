@@ -25,11 +25,16 @@ public class Battle extends JPanel implements ActionListener {
     private ImageIcon enemySprite = new ImageIcon("images/enemy.png");
     // private Cards[] playerSelectedCards;
 
-    //
+    
     private JPanel cardPanel = new JPanel() {
-        protected void paintComponent(Graphics g) {
+
+        protected void paintComponent(Graphics g) {            
             super.paintComponent(g);
             
+            // enables antialiasing on the font which makes it look way better
+            Graphics2D g2d = (Graphics2D)g;
+            g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+
             // draw the characters
             g.drawImage(playerSprite.getImage(), 100, 120, null);
             g.drawImage(enemySprite.getImage(), 900, 120, null);
@@ -42,10 +47,19 @@ public class Battle extends JPanel implements ActionListener {
             g.fillRect(1001, 61, enemy.getHealth()/(enemy.getMaxHealth()/250), 24);
 
             g.setColor(Color.black);
-            g.setFont(new Font("Arial", Font.BOLD, 20));
-            g.drawString("Health: " + player.getHealth() +"/"+ player.getMaxHealth(), 40, 80);
-            g.drawString("Health: " + enemy.getHealth() +"/"+ enemy.getMaxHealth(), 1005, 80);
+            g.setFont(Main.Lexend18);
+            g.drawString("" + player.getHealth() +"/"+ player.getMaxHealth(), 40, 80);
+            g.drawString("" + enemy.getHealth() +"/"+ enemy.getMaxHealth(), 1005, 80);
             
+            // ambrosia stat
+            g.drawString("Ambrosia: " + player.getAmbrosia(), 40, 120);
+            g.drawString("Ambrosia: " + enemy.getAmbrosia(), 1005, 120);
+
+            // Vulnerable Stacks
+            if (player.getVulnerableStacks() > 0) 
+                g.drawString("Vulnerable: x" + player.getVulnerableStacks(), 20, 150);
+            if (enemy.getVulnerableStacks() > 0)
+                g.drawString("Vulnerable: x" + enemy.getVulnerableStacks(), 1055, 150);
 
             // display player's cards
             for (int i = 0; i < GamePanel.deckSize; i++) {
@@ -91,7 +105,7 @@ public class Battle extends JPanel implements ActionListener {
     };
 
     public Battle(Player player, Cards[] playerSelectedCards) {
-
+        
         // put playerSelectedCards into player.hand
         for (int i = 0; i < playerSelectedCards.length; i++) {
             player.hand[i] = playerSelectedCards[i];
@@ -126,8 +140,24 @@ public class Battle extends JPanel implements ActionListener {
     }
 
     private void performAttack(Cards attackerCard, Battler defender) {
+        // gets ambrosia from card
+        playersArray[turn].setAmbrosia(attackerCard.getAmbrosia());
 
-        defender.setHealth(defender.getHealth() - (10*(attackerCard.getAttack())));
+        // checks if the character has enough ambrosia to use this card
+        if (attackerCard.getAmbrosiaCost() <= playersArray[turn].getAmbrosia()) {
+            
+            playersArray[turn].setAmbrosia(-1*(attackerCard.getAmbrosiaCost()));
+            playersArray[altTurn].setVulnerableStacks(attackerCard.getVulnerableStacks());
+
+            // deal damage
+            if (playersArray[altTurn].getVulnerableStacks() > 0)
+                defender.setHealth(defender.getHealth() - (20*(attackerCard.getAttack())));
+            else
+                defender.setHealth(defender.getHealth() - (10*(attackerCard.getAttack())));
+            
+
+        }
+
     }
 
     public void actionPerformed(ActionEvent e) {
@@ -147,8 +177,10 @@ public class Battle extends JPanel implements ActionListener {
                 messageLabel.setText("Enemy attacks");
             }
 
+            reduceStacks(playersArray[turn]);
+            
             performAttack(playersArray[turn].hand[(round-1)/2 % 8], playersArray[altTurn]);
-
+            
             repaint();
 
             if (playersArray[altTurn].getHealth() <= 0) {
@@ -161,4 +193,11 @@ public class Battle extends JPanel implements ActionListener {
             }
         }
     }
+
+    private void reduceStacks(Battler target) {
+        if (target.getVulnerableStacks() > 0) {
+            target.setVulnerableStacks(-1);
+        }
+    }
+
 }
