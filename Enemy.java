@@ -7,12 +7,21 @@ public class Enemy extends Battler {
         super("Enemy");
 
         for (int i = 0; i < GamePanel.deckSize; i++) {
-            hand[i] = new Cards(i * 150 + 20, 600);
+            hand[i] = new Cards(i * 150 + 20, 600, 50, 50);
         }
     }
 
     @Override
     public void myDraw(Graphics g) {
 
+    }
+
+    @Override
+    public void attackAnim(int frame) {
+
+    }
+
+    @Override
+    public void attackAnimStop(int frame) {
     }
 }
