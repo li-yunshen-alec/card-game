@@ -37,7 +37,6 @@ public class GamePanel extends JPanel implements MouseMotionListener, MouseListe
         initButtons();
     }
 
-    @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
 
@@ -168,8 +167,23 @@ public class GamePanel extends JPanel implements MouseMotionListener, MouseListe
             add(battle, BorderLayout.CENTER);
             revalidate();
             repaint();
-        } else {
-            System.out.println("Please select exactly " + deckSize + " cards for the battle.");
+        }
+        // if you didn't fill out your deck, it will generate some random cards to use
+        else {
+            for (int i = 0; i < deckSize; i++) {
+                if (selectedCards[i] == null) {
+                    selectedCards[i] = new Cards(0, 0, 100, 0);
+                    cardsSelected++;
+                }
+            }
+            removeAll();
+            revalidate();
+            repaint();
+
+            Battle battle = new Battle(player, selectedCards);
+            add(battle, BorderLayout.CENTER);
+            revalidate();
+            repaint();
         }
     }
 
@@ -216,13 +230,19 @@ public class GamePanel extends JPanel implements MouseMotionListener, MouseListe
                         && e.getY() >= cardBoxes[i].getY()
                         && e.getY() <= cardBoxes[i].getY() + cardBoxes[i].getHeight()) {
 
-                    // if there is already a card in the box, remove the card
+                    // if the same card is in the box already, merge the two cards. else just remove
+                    // the card
                     if (selectedCards[i] != null) {
 
-                        selectedCards[i].setX(selectedCards[i].getOriginalX());
-                        selectedCards[i].setY(selectedCards[i].getOriginalY());
+                        if (selectedCards[i].getID() == selected.getID() && !(selectedCards[i] == selected)
+                                && !(selected.getLevel() > 2)) {
+                            selected.increaseLevel();
+                        } else {
+                            selectedCards[i].setX(selectedCards[i].getOriginalX());
+                            selectedCards[i].setY(selectedCards[i].getOriginalY());
 
-                        removeCard(selectedCards[i]);
+                            removeCard(selectedCards[i]);
+                        }
                     }
 
                     // remove card from current position in selection if applicable to support
