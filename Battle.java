@@ -117,7 +117,7 @@ public class Battle extends JPanel implements ActionListener {
         //    else 
         //        g.drawString("-" + damage, 350, HEALTHBAR_Y+10);
         //}
-        System.out.println(showDamage);
+        //System.out.println(showDamage);
         g.setColor(Color.red);
         g.setFont(Main.Lexend30);
         for (int i = 0; i < showDamage.size()-1; i=i+2 ) {
@@ -133,13 +133,13 @@ public class Battle extends JPanel implements ActionListener {
 
             if (showDamage.get(i+1) == 0) {
                 showDamage.remove(i);
-                showDamage.remove(i+1);
+                showDamage.remove(i);
             }
         }
 
 
         // display player's cards
-        for (int i = GamePanel.deckSize-1; i >= 0; i=i-1) {
+        for (int i = GamePanel.deckSize-1; i >= 0; i--) {
             player.hand[i].setX(5 + i * 62);
             player.hand[i].setY(CARDY);
 
@@ -152,7 +152,7 @@ public class Battle extends JPanel implements ActionListener {
         }
 
         // display enemy's cards
-        for (int i = GamePanel.deckSize-1; i >= 0; i=i-1) {
+        for (int i = GamePanel.deckSize-1; i >= 0; i--) {
             enemy.hand[i].setX(1140 + i * -62);
             enemy.hand[i].setY(CARDY);
 
@@ -171,12 +171,12 @@ public class Battle extends JPanel implements ActionListener {
 
     private void performAttack(Cards attackerCard, Battler defender) {
         // gets ambrosia from card
-        playersArray[turn].setEnergy(attackerCard.getAmbrosia());
+        playersArray[turn].setEnergy(attackerCard.getEnergy());
 
         // checks if the character has enough ambrosia to use this card
-        if (attackerCard.getAmbrosiaCost() <= playersArray[turn].getEnergy()) {
+        if (attackerCard.getEnergyCost() <= playersArray[turn].getEnergy()) {
 
-            playersArray[turn].setEnergy(-1 * (attackerCard.getAmbrosiaCost()));
+            playersArray[turn].setEnergy(-1 * (attackerCard.getEnergyCost()));
             playersArray[turn].setShield(attackerCard.getShield()*10);
             playersArray[altTurn].setVulnerableStacks(attackerCard.getVulnerableStacks());
             playersArray[turn].setStrengthenStacks(attackerCard.getStrengthenStacks());
