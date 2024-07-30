@@ -139,7 +139,7 @@ public class Battle extends JPanel implements ActionListener {
 
 
         // display player's cards
-        for (int i = GamePanel.deckSize-1; i >= 0; i--) {
+        for (int i = DeckBuildPanel.deckSize-1; i >= 0; i--) {
             player.hand[i].setX(5 + i * 62);
             player.hand[i].setY(CARDY);
 
@@ -152,7 +152,7 @@ public class Battle extends JPanel implements ActionListener {
         }
 
         // display enemy's cards
-        for (int i = GamePanel.deckSize-1; i >= 0; i--) {
+        for (int i = DeckBuildPanel.deckSize-1; i >= 0; i--) {
             enemy.hand[i].setX(1140 + i * -62);
             enemy.hand[i].setY(CARDY);
 
@@ -223,66 +223,63 @@ public class Battle extends JPanel implements ActionListener {
 
     public void actionPerformed(ActionEvent e) {
     
-        if (e.getSource() == timer) {
+        if (e.getSource() == timer && !isWon) {
             if (!doubleTime) {
                 culler++;
             }
             if (culler%2 == 0) {
             frameCounter++;
             
-            // first frame of turn
-            if (frameCounter == 1) {
-                altTurn = (round + 1) % 2;
-                if (round % 2 == 0) {
-                    turn = 0;
-                    //messageLabel.setText("Player attacks");
-                } else {
-                    turn = 1;
-                    //messageLabel.setText("Enemy attacks");
-                }
-                round++;
-            }
-
-            // frame 0 - 5
-            if (frameCounter <= framesForCardUp)
-                cardUpY = cardUpY-(150/framesForCardUp);
-
-            if (frameCounter == 20)
-                performAttack(playersArray[turn].hand[(round - 1) / 2 % 8], playersArray[altTurn]);
-                
-            if (frameCounter == 40)
-                player.attackAnimStop(1);
-
-            player.increaseCounter();
-
-            repaint();
-            // frame 55 - 60
-            if (frameCounter >= 55)
-                cardUpY = cardUpY+(150/framesForCardUp);
-
-            // frame 60
-            if (frameCounter == framesPerTurn) {
-                frameCounter = 0;
-                cardUpY = CARDY;
-            // if round is even, it is the player's turn, if round is odd, its the enemy's
-            // turn. turn is 0 or 1 to make using an array easier
-
-                
-                damage = 0;
-
-                reduceStacks(playersArray[turn]);
-                showDamage.clear();
-                
-
-                if (playersArray[altTurn].getHealth() <= 0) {
-                    System.out.println(playersArray[altTurn] + "loses!");
-                    isWon = true;
+                // first frame of turn
+                if (frameCounter == 1) {
+                    altTurn = (round + 1) % 2;
+                    if (round % 2 == 0) {
+                        turn = 0;
+                        //messageLabel.setText("Player attacks");
+                    } else {
+                        turn = 1;
+                        //messageLabel.setText("Enemy attacks");
+                    }
+                    round++;
                 }
 
-                if (isWon) {
-                    System.exit(0);
+                // frame 0 - 5
+                if (frameCounter <= framesForCardUp)
+                    cardUpY = cardUpY-(150/framesForCardUp);
+
+                if (frameCounter == 20)
+                    performAttack(playersArray[turn].hand[(round - 1) / 2 % 8], playersArray[altTurn]);
+                    
+                if (frameCounter == 40)
+                    player.attackAnimStop(1);
+
+                player.increaseCounter();
+
+                repaint();
+                // frame 55 - 60
+                if (frameCounter >= 55)
+                    cardUpY = cardUpY+(150/framesForCardUp);
+
+                // frame 60
+                if (frameCounter == framesPerTurn) {
+                    frameCounter = 0;
+                    cardUpY = CARDY;
+                // if round is even, it is the player's turn, if round is odd, its the enemy's
+                // turn. turn is 0 or 1 to make using an array easier
+
+                    
+                    damage = 0;
+
+                    reduceStacks(playersArray[turn]);
+                    showDamage.clear();
+                    
+
+                    if (playersArray[altTurn].getHealth() <= 0) {
+                        System.out.println(playersArray[altTurn] + "loses!");
+                        isWon = true;
+                        Main.showCard("Menu");
+                    }
                 }
-            }
             }
         }
         else if (e.getSource() == doubleSpeed) {

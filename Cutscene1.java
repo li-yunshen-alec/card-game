@@ -9,7 +9,7 @@ import java.util.Scanner;
 
 import javax.imageio.ImageIO;
 
-public class Game extends JPanel implements MouseListener{
+public class Cutscene1 extends JPanel implements KeyListener, MouseListener {
     private int characterX = 0;
     private BufferedImage farBackground, background1, background2, foreground, blackBar;
     private BufferedImage[] carSprites = new BufferedImage[4];
@@ -22,7 +22,7 @@ public class Game extends JPanel implements MouseListener{
     private boolean fadingIn = true;
     private boolean fadingOut = false;
 
-    public Game() {
+    public Cutscene1() {
         try {
             farBackground = ImageIO.read(new File("environment/far-buildings.png"));
             background1 = ImageIO.read(new File("environment/back-buildings.png"));
@@ -38,7 +38,9 @@ public class Game extends JPanel implements MouseListener{
 
         dialogue = new Dialogue();
         setFocusable(true);
+        this.addKeyListener(this);
         this.addMouseListener(this);
+        addKeyListener(this);
 
         Timer timer = new Timer(1000 / 60, e -> {
             long currentTime = System.currentTimeMillis();
@@ -113,16 +115,15 @@ public class Game extends JPanel implements MouseListener{
 
     private void startTutorial() {
         // switches to the next card in the layout
-        CardLayout cardLayout = (CardLayout) getParent().getLayout();
-        cardLayout.next(getParent());
+        Main.nextCard();
     }
 
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            Game game = new Game();
-            game.setVisible(true);
-        });
-    }
+    //public static void main(String[] args) {
+    //    SwingUtilities.invokeLater(() -> {
+    //        Cutscene1 game = new Cutscene1();
+    //        game.setVisible(true);
+    //    });
+    //}
 
     class Dialogue {
         private ArrayList<String[]> dialogues = new ArrayList<>();
@@ -215,19 +216,31 @@ public class Game extends JPanel implements MouseListener{
         }
     }
 
-    public void mousePressed(MouseEvent e) {
+    public void mousePressed(MouseEvent e) {}
+    public void mouseReleased(MouseEvent e) {}
+    public void mouseEntered(MouseEvent e) {}
+    public void mouseExited(MouseEvent e) {}
 
+    public void keyTyped(KeyEvent e) {
+        //System.out.println(e);
     }
-
-    public void mouseReleased(MouseEvent e) {
-
+    public void keyPressed(KeyEvent e) {
+        //System.out.println(e);
     }
+    public void keyReleased(KeyEvent e) {
+        //System.out.println(e);
 
-    public void mouseEntered(MouseEvent e) {
-
-    }
-
-    public void mouseExited(MouseEvent e) {
-    
+        // skip cutscene if x is pressed
+        if (e.getKeyCode() == 88)
+            startTutorial();
+        // spacebar works like the mouse
+        if (e.getKeyCode() == 32) {
+            dialogue.next();
+            if (dialogue.index == dialogue.tutorialStartIndex) {
+                startTutorial();
+            } else if (dialogue.index == dialogue.dialogues.size()) {
+                fadingOut = true;
+            }
+        }
     }
 }
