@@ -14,7 +14,10 @@ class Main {
 
     public static void main(String[] args) {
 
-        JFrame f = new JFrame("hi");
+        ImageIcon test = new ImageIcon("images/favicon.png");
+
+        JFrame f = new JFrame("BEFALL");
+        f.setIconImage(test.getImage());
 
         JPanel p = new JPanel(new CardLayout());
         MainMenu p1 = new MainMenu();
@@ -22,9 +25,9 @@ class Main {
         GamePanel p3 = new GamePanel();
 
         f.add(p, BorderLayout.CENTER);
-        p.add(p1, "Menu");
+        p.add(p3, "Menu");
         p.add(p2, "Game");
-        p.add(p3, "CardGame");
+        p.add(p1, "CardGame");
 
         f.setVisible(true);
         f.setSize(WIDTH, HEIGHT);
@@ -40,7 +43,7 @@ class Main {
         try {
             font = Font.createFont(Font.TRUETYPE_FONT, new File(path)).deriveFont(size);
         } catch (Exception e) {
-            System.out.println("Couldn't get font file");
+            System.out.println("Couldn't get font");
         }
         return font;
     }

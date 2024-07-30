@@ -13,12 +13,14 @@ public class Cards implements MouseMotionListener {
     private int ambrosiaCost = 0;
     private int ambrosiaGive = 0;
     private int vulnerableStacks = 0;
+    private int strengthenStacks = 0;
     private int shield = 0;
     private int originalX, originalY;
     private int selectionIndex = -1;
     private Scanner filesc;
-    private int cardDataPoints = 15;  // the number of different pieces of data stored in a card template
+    private int cardDataPoints = 30;  // the number of different pieces of data stored in a card template
     private String cardDataArray[] = new String[cardDataPoints];
+    private String cardDataSplit[];
     private int rarity = 0;
     private int rand; // index of a randomly chosen card
     private int count = 0;
@@ -41,10 +43,11 @@ public class Cards implements MouseMotionListener {
         // randomly generate a card
         rarity = (int) (Math.random() * 100 + 1);
         if (rarity <= common) {
-            rand = (int) (Math.random() * 4 + 1);
+            rand = (int) (Math.random() * 5 + 1);
             rarity = 0;
             cardtest = new ImageIcon("images/card4.png");
-        } else if (rarity <= common+rare) {
+        } 
+        else if (rarity <= common+rare) {
             rand = (int) (Math.random() * 2 + 1);
             rarity = 1;
             cardtest = new ImageIcon("images/card5.png");
@@ -60,22 +63,52 @@ public class Cards implements MouseMotionListener {
             }	
         }
         catch(Exception e) {
-            System.out.print(e);
+            System.out.println("here" + e);
         }
 
-        System.out.println("card: " + rand);
+        //System.out.println("card: " + rand);
         //for(int i = 0; i < cardDataArray.length; i++) {
             //System.out.println(cardDataArray[i]);
         //}
         
         // assign the data from the file to variables in the class
         description = cardDataArray[1].split(":");
-        name = (cardDataArray[4].substring(5)).toUpperCase();
-        attack = Integer.parseInt(cardDataArray[5].substring(7));
-        ambrosiaCost = Integer.parseInt(cardDataArray[6].substring(13));
-        ambrosiaGive = Integer.parseInt(cardDataArray[7].substring(13));
-        vulnerableStacks = Integer.parseInt(cardDataArray[12].substring(17));
-        shield = Integer.parseInt(cardDataArray[11].substring(12));
+        name = (cardDataArray[2].substring(5)).toUpperCase();
+
+        for (int i = 0; i < count; i++) {
+            cardDataSplit = cardDataArray[i].split(" ");
+
+            if (cardDataSplit[0].equals("damage")) {
+                attack = Integer.parseInt(cardDataSplit[1]);
+            }
+            else if (cardDataSplit[0].equals("ambrosiaCost")) {
+                ambrosiaCost = Integer.parseInt(cardDataSplit[1]);
+            }
+            else if (cardDataSplit[0].equals("ambrosiaGive")) {
+                ambrosiaGive = Integer.parseInt(cardDataSplit[1]);
+            }
+            else if (cardDataSplit[0].equals("heal")) {
+
+            }
+            else if (cardDataSplit[0].equals("healingStacks")) {
+
+            }
+            else if (cardDataSplit[0].equals("addMaxHP")) {
+
+            }
+            else if (cardDataSplit[0].equals("addShieldHp")) {
+                shield = Integer.parseInt(cardDataSplit[1]);
+            }
+            else if (cardDataSplit[0].equals("vulnerableStacks")) {
+                vulnerableStacks = Integer.parseInt(cardDataSplit[1]);
+            }
+            else if (cardDataSplit[0].equals("strengthenStacks")) {
+                strengthenStacks = Integer.parseInt(cardDataSplit[1]);
+            }
+            else if (cardDataSplit[0].equals("bleedStacks")) {
+
+            }
+        }
 
         filesc.close();
     }
@@ -102,49 +135,29 @@ public class Cards implements MouseMotionListener {
         return (x - 10 < mx && y - 10 < my && x + CARDWIDTH > mx && y + CARDHIGHT > my);
     }
 
-    public void setHealth(int newHealth) {
-
-        health = newHealth;
-    }
-
-    public int getHealth() {
-
-        return health;
-    }
-
-    public int getAttack() {
-
-        return attack;
-    }
-
+    
+    // getters -------------------------
     public int getX() {
         return x;
     }
-
     public int getY() {
         return y;
     }
-
-    public void setX(int x) {
-        this.x = x;
+    public int getHealth() {
+        return health;
     }
-
-    public void setY(int y) {
-        this.y = y;
+    public int getAttack() {
+        return attack;
     }
-
     public int getOriginalX() {
         return originalX;
     }
-
     public int getOriginalY() {
         return originalY;
     }
-
     public int getAmbrosiaCost() {
         return ambrosiaCost;
     }
-
     public int getAmbrosia() {
         return ambrosiaGive;
     }
@@ -154,13 +167,28 @@ public class Cards implements MouseMotionListener {
     public int getVulnerableStacks() {
         return vulnerableStacks;
     }
+    public int getStrengthenStacks() {
+        return strengthenStacks;
+    }
     public int getSelectionIndex() {
         return selectionIndex;
     }
 
+    // setters
     public void setSelectionIndex(int index) {
         selectionIndex = index;
     }
+    public void setHealth(int newHealth) {
+        health = newHealth;
+    }
+    public void setX(int x) {
+        this.x = x;
+    }
+    public void setY(int y) {
+        this.y = y;
+    }
+
+
 
     public void myDraw(Graphics g) {
         // enables antialiasing on the font which makes it look way better
