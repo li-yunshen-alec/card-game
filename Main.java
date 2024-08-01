@@ -1,34 +1,41 @@
+// java game 
+// Frame, cardlayout, and some fonts
+
 import javax.swing.*;
 import java.awt.*;
 import java.io.File;
 
 class Main {
 
-    // Size
+    // Window size
     public static final int WIDTH = 1280;
-    public static final int HEIGHT = 720;
-
+    public static final int HEIGHT = 720;   
+    
     static CardLayout cardLayout;
     static JPanel p = new JPanel(new CardLayout());
 
     public static void main(String[] args) {
-        // JPanel p;
+        //JPanel p;
         ImageIcon test = new ImageIcon("images/favicon.png");
 
         JFrame f = new JFrame("BEFALL");
         f.setIconImage(test.getImage());
 
+        
         MainMenu p1 = new MainMenu();
         Cutscene1 p2 = new Cutscene1();
-        DeckBuildPanel p3 = new DeckBuildPanel();
+        InteractivePanel p3 = new InteractivePanel();
+        DeckBuildPanel p4 = new DeckBuildPanel();
 
         f.add(p, BorderLayout.CENTER);
         addCard(p1, "Menu");
         addCard(p2, "Cutscene1");
-        addCard(p3, "CardGame");
-
-        // idk why but keylistener in the cutscene does not work unless I do this
+        addCard(p3, "Map");
+        addCard(p4, "CardGame");
+        
+        // idk why but keylistener does not work unless I do this
         f.addKeyListener(p2);
+        f.addKeyListener(p3.keyHandler);
 
         f.setVisible(true);
         f.setSize(WIDTH, HEIGHT);
@@ -39,15 +46,14 @@ class Main {
         showCard("Menu");
 
     }
+    
 
     static public void nextCard() {
         cardLayout.next(p);
     }
-
     static public void showCard(String name) {
         cardLayout.show(p, name);
     }
-
     static public void addCard(JPanel jPanel, String name) {
         p.add(jPanel, name);
     }
@@ -68,5 +74,6 @@ class Main {
     public static final Font Lexend18 = loadFont("fonts/lexend/static/Lexend-Regular.ttf", 18);
     public static final Font Lexend30 = loadFont("fonts/lexend/static/Lexend-Regular.ttf", 30);
     public static final Font Lexend60 = loadFont("fonts/lexend/static/Lexend-Regular.ttf", 60);
+    public static final Font Lexend160 = loadFont("fonts/lexend/static/Lexend-Regular.ttf", 160);
 
 }

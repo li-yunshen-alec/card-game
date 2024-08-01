@@ -1,6 +1,8 @@
+// The screen where you can select the cards you will bring into the auto-battle as well as fuse and upgrade cards
+
 import javax.swing.*;
-import javax.swing.border.Border;
-import javax.swing.border.EmptyBorder;
+//import javax.swing.border.Border;
+//import javax.swing.border.EmptyBorder;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -9,7 +11,7 @@ import java.util.*;
 public class DeckBuildPanel extends JPanel implements MouseMotionListener, MouseListener, ActionListener {
 
     private int x, y;
-    private int cardsInDeck = 8;
+    //private int cardsInDeck = 8;
     public static int deckSize = 8;
     private Cards selected = null;
     private int offsetX, offsetY;
@@ -37,9 +39,9 @@ public class DeckBuildPanel extends JPanel implements MouseMotionListener, Mouse
         initButtons();
         try {
             Music music = new Music("music/bg.wav");
-            // music.doathing();
-        } catch (Exception e) {
-            System.out.println("Hmm");
+        }
+        catch (Exception e) {
+            System.out.println(e);
         }
     }
 
@@ -47,26 +49,28 @@ public class DeckBuildPanel extends JPanel implements MouseMotionListener, Mouse
         super.paintComponent(g);
 
         // anti-alising on font
-        Graphics2D g2d = (Graphics2D) g;
+        Graphics2D g2d = (Graphics2D)g;
         g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 
         int counter = 1;
-        // g.drawOval(x - 20, y - 20, 40, 40);
+        //g.drawOval(x - 20, y - 20, 40, 40);
 
         // draw card boxes
         for (int i = 0; i < deckSize; i++) {
             g.setColor(new Color(101, 111, 249));
-            g.fillRect(122 + i * 130, 162, Cards.CARDWIDTH - 4, Cards.CARDHIGHT - 4);
+            g.fillRect(122 + i * 130, 162, Cards.CARDWIDTH-4, Cards.CARDHIGHT-4);
 
             g.setColor(new Color(45, 44, 60));
-            g.fillRect(123 + i * 130, 163, Cards.CARDWIDTH - 6, Cards.CARDHIGHT - 6);
+            g.fillRect(123 + i * 130, 163, Cards.CARDWIDTH-6, Cards.CARDHIGHT-6);
 
             g.setColor(new Color(58, 57, 74));
-
+            
+            
             g.setFont(Main.Lexend60);
-            g.drawString("" + counter, 165 + i * 130, 295);
+            g.drawString(""+ counter, 165 + i * 130, 295);
             counter++;
         }
+
 
         for (Cards card : player.deck) {
             card.myDraw(g);
@@ -82,8 +86,9 @@ public class DeckBuildPanel extends JPanel implements MouseMotionListener, Mouse
         this.addMouseMotionListener(this);
         this.addMouseListener(this);
 
-        instructionLabel = new JLabel(("Drag exactly " + deckSize
-                + " cards into the boxes to take into battle, then press Start Battle").toUpperCase());
+        instructionLabel = new JLabel((
+                "Drag exactly " + deckSize
+                        + " cards into the boxes to take into battle, then press Start Battle").toUpperCase());
         instructionLabel.setHorizontalAlignment(SwingConstants.CENTER);
         instructionLabel.setFont(Main.Lexend18);
         this.add(instructionLabel, BorderLayout.NORTH);
@@ -101,8 +106,8 @@ public class DeckBuildPanel extends JPanel implements MouseMotionListener, Mouse
             cardBoxes[i].setBounds(120 + i * 130, 160, 120, 220);
 
             // I commented out these two lines and nothing broke
-            // cardBoxes[i].setBorder(BorderFactory.createLineBorder(Color.BLACK));
-            // this.add(cardBoxes[i]);
+            //cardBoxes[i].setBorder(BorderFactory.createLineBorder(Color.BLACK));
+            //this.add(cardBoxes[i]);
         }
     }
 
@@ -110,7 +115,7 @@ public class DeckBuildPanel extends JPanel implements MouseMotionListener, Mouse
 
         // create the battle button
         battleButton = new JButton("Start Battle");
-
+        
         battleButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -127,8 +132,10 @@ public class DeckBuildPanel extends JPanel implements MouseMotionListener, Mouse
         battleButton.setBorderPainted(false);
         battleButton.setFocusPainted(false);
 
+
         // Create the left button
         leftButton = new JButton("<");
+        
 
         leftButton.addActionListener(new ActionListener() {
             @Override
@@ -137,7 +144,7 @@ public class DeckBuildPanel extends JPanel implements MouseMotionListener, Mouse
                 scroll(50);
             }
         });
-        // this.add(leftButton, BorderLayout.WEST);
+        //this.add(leftButton, BorderLayout.WEST);
 
         // Create the right button
         rightButton = new JButton(">");
@@ -148,7 +155,7 @@ public class DeckBuildPanel extends JPanel implements MouseMotionListener, Mouse
                 scroll(-50);
             }
         });
-        // this.add(rightButton, BorderLayout.EAST);
+        //this.add(rightButton, BorderLayout.EAST);
     }
 
     public void scroll(int scrollValue) {
@@ -166,38 +173,38 @@ public class DeckBuildPanel extends JPanel implements MouseMotionListener, Mouse
         if (cardsSelected == deckSize) {
             Battle battle = new Battle(player, selectedCards);
             Main.addCard(battle, "battle");
-            // Main.nextCard();
-            /*
-             * removeAll();
-             * revalidate();
-             * repaint();
-             * 
-             * Battle battle = new Battle(player, selectedCards);
-             * add(battle, BorderLayout.CENTER);
-             * revalidate();
-             * repaint();
-             */
-        }
+            //Main.nextCard();
+            /* 
+            removeAll();
+            revalidate();
+            repaint();
+
+            Battle battle = new Battle(player, selectedCards);
+            add(battle, BorderLayout.CENTER);
+            revalidate();
+            repaint();
+            */
+        } 
         // if you didn't fill out your deck, it will generate some random cards to use
         else {
             for (int i = 0; i < deckSize; i++) {
                 if (selectedCards[i] == null) {
-                    selectedCards[i] = new Cards(0, 0, 100, 0);
+                    selectedCards[i] = new Cards(0,0,100,0);
                     cardsSelected++;
                 }
             }
             Battle battle = new Battle(player, selectedCards);
             Main.addCard(battle, "battle");
-            /*
-             * removeAll();
-             * revalidate();
-             * repaint();
-             * 
-             * Battle battle = new Battle(player, selectedCards);
-             * add(battle, BorderLayout.CENTER);
-             * revalidate();
-             * repaint();
-             */
+            /* 
+            removeAll();
+            revalidate();
+            repaint();
+
+            Battle battle = new Battle(player, selectedCards);
+            add(battle, BorderLayout.CENTER);
+            revalidate();
+            repaint();
+        */
         }
         Main.showCard("battle");
     }
@@ -244,19 +251,18 @@ public class DeckBuildPanel extends JPanel implements MouseMotionListener, Mouse
                 if (e.getX() >= cardBoxes[i].getX() && e.getX() <= cardBoxes[i].getX() + cardBoxes[i].getWidth()
                         && e.getY() >= cardBoxes[i].getY()
                         && e.getY() <= cardBoxes[i].getY() + cardBoxes[i].getHeight()) {
-
-                    // if the same card is in the box already, merge the two cards. else just remove
-                    // the card
+                    
+                    // if the same card is in the box already, merge the two cards. else just remove the card
                     if (selectedCards[i] != null) {
 
-                        if (selectedCards[i].getID() == selected.getID() && !(selectedCards[i] == selected)
-                                && !(selected.getLevel() > 2)) {
+                        if (selectedCards[i].getID() == selected.getID() && !(selectedCards[i] == selected) && !(selected.getLevel() > 2)) {
                             selected.increaseLevel();
-                        } else {
-                            selectedCards[i].setX(selectedCards[i].getOriginalX());
-                            selectedCards[i].setY(selectedCards[i].getOriginalY());
+                        }
+                        else {
+                        selectedCards[i].setX(selectedCards[i].getOriginalX());
+                        selectedCards[i].setY(selectedCards[i].getOriginalY());
 
-                            removeCard(selectedCards[i]);
+                        removeCard(selectedCards[i]);
                         }
                     }
 
@@ -306,15 +312,14 @@ public class DeckBuildPanel extends JPanel implements MouseMotionListener, Mouse
         }
     }
 
-    // remove gaps between cards in the deck as cards are removed. Tries to center
-    // the cards
+    // remove gaps between cards in the deck as cards are removed. Tries to center the cards
     public void removeGaps() {
 
         // gets the center of the screen
-        int deckX = (Main.WIDTH) / 2;
+        int deckX = (Main.WIDTH)/2;
 
         // adjusts the start accounting for each of the cards in the deck
-        for (Cards card : player.deck)
+        for (int i=0; i < player.deck.size(); i++)
             deckX = deckX - 60;
 
         // puts each card after one another

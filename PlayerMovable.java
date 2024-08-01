@@ -16,8 +16,8 @@ public class PlayerMovable extends Entity {
 
     Set<Integer> collisionTiles = new HashSet<>();
 
-    static int drawX;
-    static int drawY;
+    private int drawX = Main.WIDTH / 2;
+    private int drawY = Main.HEIGHT / 2;
 
     int C = 63;
     int R = 43;
@@ -41,9 +41,6 @@ public class PlayerMovable extends Entity {
         y = 6 * gamePanel.TILE_SIZE;
         speed = 6;
         direction = "right";
-
-        drawX = gamePanel.WINDOW_WIDTH / 2;
-        drawY = gamePanel.WINDOW_HEIGHT / 2;
 
         collisionTiles
                 .addAll(Arrays.asList(new Integer[] { 105, 84, 85, 95, 98, 132, 0, 96, 103, 108, 111, 112, 113, 114 }));
@@ -71,8 +68,7 @@ public class PlayerMovable extends Entity {
 
         try {
 
-            BufferedReader reader = new BufferedReader(
-                    new InputStreamReader(getClass().getResourceAsStream(file)));
+            BufferedReader reader = new BufferedReader(new InputStreamReader(getClass().getResourceAsStream(file)));
 
             for (int i = 0; i < R; i++) {
                 map[i] = reader.readLine().split(",");
@@ -80,6 +76,7 @@ public class PlayerMovable extends Entity {
             }
 
         } catch (Exception e) {
+            System.out.println(":P");
             e.printStackTrace();
             ;
         }
@@ -175,5 +172,12 @@ public class PlayerMovable extends Entity {
 
             spriteCounter = 0;
         }
+    }
+
+    public int getDrawX() {
+        return drawX;
+    }
+    public int getDrawY() {
+        return drawY;
     }
 }
