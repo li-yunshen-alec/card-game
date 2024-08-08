@@ -75,9 +75,9 @@ public class InteractivePanel extends JPanel implements Runnable {
             enemy.update(player, this);
         }
 
-        // after 10 seconds you enter battle
+        // after 1 seconds you enter battle
         counter++;
-        System.out.println(counter);
+        //System.out.println(counter);
         if (counter == 60 * 1) {
             // Main.nextCard();
             counter = 0;
