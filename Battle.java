@@ -8,7 +8,8 @@ import java.util.ArrayList;
 public class Battle extends JPanel implements ActionListener {
 
     private Battler player; // player is made in the constructor
-    private Battler enemy = new Enemy();
+    private Battler enemy;
+     
 
     private Battler playersArray[] = new Battler[2];
 
@@ -53,7 +54,7 @@ public class Battle extends JPanel implements ActionListener {
 
     // ------------------------------------------------------------------------------------------
 
-    public Battle(Player player, Cards[] playerSelectedCards) {
+    public Battle(Player player, Cards[] playerSelectedCards, int difficulty) {
 
         // put playerSelectedCards into player.hand
         for (int i = 0; i < playerSelectedCards.length; i++) {
@@ -90,6 +91,8 @@ public class Battle extends JPanel implements ActionListener {
 
         // create player array
         playersArray[0] = player;
+        
+        enemy = new Enemy(difficulty);
         playersArray[1] = enemy;
 
         // setup timer
@@ -142,29 +145,33 @@ public class Battle extends JPanel implements ActionListener {
 
         // display player's cards
         for (int i = player.hand.length - 1; i >= 0; i--) {
-            player.hand[i].setX(5 + i * 62);
-            player.hand[i].setY(CARDY);
-
+            if (player.hand[i] != null) {
+                player.hand[i].setX(5 + i * 62);
+                player.hand[i].setY(CARDY);
+                
             // moves the currently acting card upwards 20px to make it more visible
             if (turn == 0 && i == (round - 1) / 2 % 8)
                 player.hand[i].setY(cardUpY);
 
             player.hand[i].myDraw(g);
+            }
             // drawCardInfo(g, player.hand[i]);
         }
 
         // display enemy's cards
         for (int i = DeckBuildPanel.deckSize - 1; i >= 0; i--) {
-            enemy.hand[i].setX(1140 + i * -62);
-            enemy.hand[i].setY(CARDY);
+            if (enemy.hand[i] != null) {
+                enemy.hand[i].setX(1140 + i * -62);
+                enemy.hand[i].setY(CARDY);
 
-            // System.out.println("round: " + round);
+                // System.out.println("round: " + round);
 
-            // moves the currently acting card upwards 20px to make it more visible
-            if (turn == 1 && i == ((round - 1) / 2) % 8)
-                enemy.hand[i].setY(cardUpY);
+                // moves the currently acting card upwards 20px to make it more visible
+                if (turn == 1 && i == ((round - 1) / 2) % 8)
+                    enemy.hand[i].setY(cardUpY);
 
-            enemy.hand[i].myDraw(g);
+                enemy.hand[i].myDraw(g);
+            }
             // drawCardInfo(g, enemy.hand[i]);
         }
     }
@@ -228,6 +235,7 @@ public class Battle extends JPanel implements ActionListener {
             if (culler % 2 == 0) {
                 frameCounter++;
 
+            
                 // first frame of turn
                 if (frameCounter == 1) {
                     altTurn = (round + 1) % 2;
@@ -239,14 +247,19 @@ public class Battle extends JPanel implements ActionListener {
                         // messageLabel.setText("Enemy attacks");
                     }
                     round++;
+
+                    // skips turn if you dont have a card in that slot
+                    if (playersArray[turn].hand[(round - 1) / 2 % 8] == null)
+                        frameCounter = framesPerTurn;
                 }
 
                 // frame 0 - 5
                 if (frameCounter <= framesForCardUp)
                     cardUpY = cardUpY - (150 / framesForCardUp);
 
-                if (frameCounter == 20)
+                if (frameCounter == 20) {
                     performAttack(playersArray[turn].hand[(round - 1) / 2 % 8], playersArray[altTurn]);
+                }
 
                 if (frameCounter == 40)
                     player.attackAnimStop(1);
@@ -281,8 +294,10 @@ public class Battle extends JPanel implements ActionListener {
                         // resets the location of the cards so they appear in the right spot in the next
                         // battle
                         for (int i = 0; i < player.hand.length; i++) {
-                            player.hand[i].setX(i * 130 + 120);
-                            player.hand[i].setY(160);
+                            if (player.hand[i] != null) {
+                                player.hand[i].setX(i * 130 + 120);
+                                player.hand[i].setY(160);
+                            }
                         }
                         // give some extra cards as a reward
                         if (player.deck.size() <= 7) {
@@ -309,13 +324,25 @@ public class Battle extends JPanel implements ActionListener {
                             deckX += 120;
                         }
 
+                        // reset the enemy
+                        if (DeckBuildPanel.difficulty == 5) {
+                            DeckBuildPanel.difficulty = 6;
+                        }
+                        else if (DeckBuildPanel.difficulty == 6) { 
+                            DeckBuildPanel.difficulty = 8;
+                        }
+                   
                         // the the player loses, they get sent to the menu screen, if they win, they get
                         // sent back to the map
                         if (playersArray[altTurn] == player)
                             Main.showCard("Menu");
-                        else
+                        else {
                             Main.showCard("Map");
 
+                            
+                        }
+                        
+                        
                         // InteractiveEnemy.inBattle = false;
                     }
                 }
