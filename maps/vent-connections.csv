@@ -1,6 +1,0 @@
-topLeft,right,leftHallway
-leftHallway,left,topLeft
-leftHallway,right,middle
-middle,left,leftHallway
-middle,right,right
-right,left,middle
