@@ -13,31 +13,31 @@ import javax.imageio.ImageIO;
 
 public class InteractiveEnemy extends Entity {
 
-    BufferedImage image;
+    private BufferedImage image;
 
-    static final int InteractiveEnemy_WIDTH = 2;
-    static final int InteractiveEnemy_HEIGHT = 2;
+    private static final int InteractiveEnemy_WIDTH = 2;
+    private static final int InteractiveEnemy_HEIGHT = 2;
 
     static ArrayList<InteractiveEnemy> InteractiveEnemies = new ArrayList<>();
 
-    int frameCounter = 0;
-    Point current = new Point(this.x / 1, this.y / 1);;
+    private int frameCounter = 0;
+    private Point current = new Point(this.x / 1, this.y / 1);;
 
-    ArrayList<Point> path = new ArrayList<>();
+    private ArrayList<Point> path = new ArrayList<>();
 
-    Set<Integer> collisionTiles = new HashSet<>();
+    private Set<Integer> collisionTiles = new HashSet<>();
 
-    int C = 63;
-    int R = 43;
-    String[][] map;
+    private int C = 63;
+    private int R = 43;
+    private String[][] map;
 
-    ArrayList<Point> triggerTiles;
-    boolean chasing = false;
-    boolean awayFromHome = false;
-    boolean goingHome = false;
+    private ArrayList<Point> triggerTiles;
+    private boolean chasing = false;
+    private boolean awayFromHome = false;
+    private boolean goingHome = false;
 
-    int initalX;
-    int initalY;
+    private int initalX;
+    private int initalY;
 
     static boolean inBattle = false;
 
@@ -173,6 +173,8 @@ public class InteractiveEnemy extends Entity {
 
     // A* (A-star) pathfinding algorithm to generate a path between enemy's current
     // position and a target position
+    // video tutorial source by Sebastian Lague (contains pseudocode):
+    // https://www.youtube.com/watch?v=-L-WgKMFuhE
     ArrayList<Point> calculatePath(InteractivePanel gamePanel, int targetX, int targetY) {
 
         // evaluate nodes in openlist and skip nodes in closedList (already evaluated)
@@ -296,7 +298,7 @@ public class InteractiveEnemy extends Entity {
 
     public void checkCollision(PlayerMovable player, InteractivePanel gamePanel) {
 
-        if (!player.inVent) {
+        if (!player.inVent && !inBattle) {
 
             if (hitbox.centerX / InteractivePanel.getTileSize() == player.hitbox.centerX
                     / InteractivePanel.getTileSize()
@@ -306,9 +308,16 @@ public class InteractiveEnemy extends Entity {
                 System.out.println("You opened a InteractiveEnemy");
 
                 Main.showCard("CardGame");
+                
                 inBattle = true;
 
             }
         }
+    }
+    public boolean isInBattle() {
+        return inBattle;
+    }
+    public static void setInBattle(boolean bool) {
+        inBattle = bool;
     }
 }
