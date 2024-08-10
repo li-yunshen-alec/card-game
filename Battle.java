@@ -51,15 +51,17 @@ public class Battle extends JPanel implements ActionListener {
     // ImageIcon("images/VulnerableIcon.png");
     // private ImageIcon strenghtIcon = new ImageIcon("images/strenghtIcon.png");
     // private ImageIcon shieldIcon = new ImageIcon("images/shieldIcon.png");
+    Cards[] originalHand; // this is soley here because I need to know where the cards where in the array so that I can move them back after battle
 
     // ------------------------------------------------------------------------------------------
 
-    public Battle(Player player, Cards[] playerSelectedCards, int difficulty) {
+    public Battle(Player player, Cards[] playerSelectedCards, int difficulty, Cards[] originalHand) {
 
         // put playerSelectedCards into player.hand
         for (int i = 0; i < playerSelectedCards.length; i++) {
             player.hand[i] = playerSelectedCards[i];
         }
+        this.originalHand = originalHand;
 
         setLayout(new BorderLayout());
 
@@ -255,6 +257,7 @@ public class Battle extends JPanel implements ActionListener {
 
                 // frame 0 - 5
                 if (frameCounter <= framesForCardUp)
+                    // moves the acting card up
                     cardUpY = cardUpY - (150 / framesForCardUp);
 
                 if (frameCounter == 20) {
@@ -269,6 +272,7 @@ public class Battle extends JPanel implements ActionListener {
                 repaint();
                 // frame 55 - 60
                 if (frameCounter >= 55)
+                    // moves the acting card back down
                     cardUpY = cardUpY + (150 / framesForCardUp);
 
                 // frame 60
@@ -293,12 +297,32 @@ public class Battle extends JPanel implements ActionListener {
 
                         // resets the location of the cards so they appear in the right spot in the next
                         // battle
+                        /*
                         for (int i = 0; i < player.hand.length; i++) {
                             if (player.hand[i] != null) {
                                 player.hand[i].setX(i * 130 + 120);
-                                player.hand[i].setY(160);
+                                player.hand[i].setY(260);
                             }
                         }
+                        */
+                        int tempCardx = 0;
+                        int tempCounter = 0;
+                        for (int i = 0; i < player.hand.length; i++) {
+                            tempCardx = i * 130 + 120;
+                            if (originalHand[i] != null) {
+                                
+                                for (int j = tempCounter; j < player.hand.length; j++) {
+                                    tempCounter++;
+                                    if (player.hand[j] != null) {
+                                        
+                                        player.hand[j].setX(tempCardx);
+                                        player.hand[j].setY(160);
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                        
                         // give some extra cards as a reward
                         if (player.deck.size() <= 7) {
                             for (int i = 0; i < 3; i++) {
@@ -309,7 +333,8 @@ public class Battle extends JPanel implements ActionListener {
                                 player.deck.add(new Cards(i * 120 + 200, 420, 60, 40));
                             }
                         }
-                        // centers the cards
+
+                        // centers the cards in deck ---------------------
                         // gets the center of the screen
                         int deckX = (Main.WIDTH) / 2;
 
@@ -324,7 +349,7 @@ public class Battle extends JPanel implements ActionListener {
                             deckX += 120;
                         }
 
-                        // reset the enemy
+                        // reset the enemy ----------------------------
                         if (DeckBuildPanel.difficulty == 5) {
                             DeckBuildPanel.difficulty = 6;
                         }
