@@ -4,6 +4,8 @@ package main;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
@@ -19,6 +21,9 @@ import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.Timer;
+
+import card_game.DeckBuildPanel;
+import tile_game.InteractivePanel;
 
 public class Cutscene1 extends JPanel implements KeyListener, MouseListener {
     private int characterX = 0;
@@ -38,6 +43,19 @@ public class Cutscene1 extends JPanel implements KeyListener, MouseListener {
 
     public Cutscene1() {
         this.setFocusable(true);
+
+        this.addComponentListener(new ComponentListener() {
+            public void componentShown(ComponentEvent e) {
+                requestFocusInWindow();
+            }
+            public void componentResized(ComponentEvent e) {
+            }
+            public void componentMoved(ComponentEvent e) {
+            }
+            public void componentHidden(ComponentEvent e) {
+            }
+        });
+
         // this.requestFocusInWindow();
         try {
             farBackground = ImageIO.read(new File("environment/far-buildings.png"));
@@ -139,7 +157,26 @@ public class Cutscene1 extends JPanel implements KeyListener, MouseListener {
     private void startTutorial() {
         // switches to the next card in the layout
         this.setFocusable(false);
+        
+        newGame();
+        
+    }
+
+    public static InteractivePanel p3;
+    public static DeckBuildPanel p4;
+
+    public static void newGame() {
+        p3 = new InteractivePanel();
+        p4 = new DeckBuildPanel();
+        
+        Main.addCard(p3, "Map");
+        Main.addCard(p4, "CardGame");
+        
         Main.showCard("Map");
+    }
+    public static void removeGame() { 
+        Main.removeCard(p3);
+        Main.removeCard(p4);
     }
 
     // public static void main(String[] args) {
