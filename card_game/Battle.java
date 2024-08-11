@@ -14,25 +14,24 @@ import java.util.ArrayList;
 
 public class Battle extends JPanel implements ActionListener {
 
-    private Battler player; // player is made in the constructor
-    private Battler enemy;
+    private Battler player; // player is brought in from the deckbuildpanel
+    private Battler enemy;  // this is made in the constructor
 
     private Battler playersArray[] = new Battler[2];
 
     private int round = 0; // player goes first in any battle
-    private int turn = 5; // is either 0 or 1 to signify if it is the player or enemys turn to act
-    private int altTurn; // the party that is not currently acting
+    private int turn = 5;  // is either 0 or 1 to signify if it is the player or enemys turn to act
+    private int altTurn;   // the party that is not currently acting
     private boolean isWon = false;
 
     // would probably be more acurate to call these ticks rather than frames
-    private int FPS = 60; // frames per second (use this to change speed cuz some animations are tied to
-                          // stuff)
+    private int FPS = 60; // frames per second (use this to change speed cuz some animations are tied to stuff)
     private int framesPerTurn = 60;
     private int frameCounter = 0;
     private int framesForCardUp = 5; // how many frames for the card up animation
 
     private final int CARDY = 520; // the Y level the cards are drawn at
-    private int cardUpY = CARDY; // intializing the card up offset
+    private int cardUpY = CARDY;   // intializing the card up offset
 
     static final int HEALTHBAR_Y = 100; // the Y level the healthbar is drawn at
     static final int HEALTHBAR_WIDTH = 250;
@@ -42,10 +41,9 @@ public class Battle extends JPanel implements ActionListener {
     private int shieldDamage = 0;
     private ArrayList<Integer> showDamage = new ArrayList<Integer>();
     private ArrayList<Integer> showHealing = new ArrayList<Integer>();
-    private int xPos = 0; // for the damage messages
+    private int xPos = 0;  // for the damage messages
     private int xPos2 = 0; // for the healing messages
-    // space for messages
-    // private JLabel messageLabel;
+
     private JLabel instructionLabel;
 
     private JButton doubleSpeed;
@@ -222,7 +220,8 @@ public class Battle extends JPanel implements ActionListener {
             playersArray[altTurn].setVulnerableStacks(attackerCard.getVulnerableStacks());
             playersArray[turn].setStrengthenStacks(attackerCard.getStrengthenStacks());
             playersArray[turn].setHealingStacks(attackerCard.getHealingStacks());
-            
+            playersArray[altTurn].setBleedStacks(attackerCard.getBleedStacks());
+
             performHealing();
 
             // deal damage -----------------------------------
@@ -255,11 +254,17 @@ public class Battle extends JPanel implements ActionListener {
                     defender.setHealth(defender.getHealth() - damage);
                     playersArray[turn].attackAnim(1);
 
-                    // prevents health from going below 0
-                    if (defender.getHealth() < 0)
-                        defender.setHealth(0);
+                    
                 }
             }
+            if (performBleed() > 0) {
+                showDamage.add(performBleed());
+                showDamage.add(100 + (showDamage.size() * 10));
+                defender.setHealth(defender.getHealth() - performBleed());
+            }               
+            // prevents health from going below 0
+            if (defender.getHealth() < 0)
+            defender.setHealth(0);
         }
     }
 
@@ -419,7 +424,7 @@ public class Battle extends JPanel implements ActionListener {
                                     InteractiveEnemy.InteractiveEnemies.remove(i);
                             }
                         }
-                        InteractiveEnemy.setInBattle(false);
+                        //InteractiveEnemy.setInBattle(false);
                         
                         // InteractiveEnemy.inBattle = false;
                     }
@@ -439,6 +444,9 @@ public class Battle extends JPanel implements ActionListener {
         if (target.getVulnerableStacks() > 0) {
             target.setVulnerableStacks(-1);
         }
+        if (target.getHealingStacks() > 0) {
+            target.setHealingStacks(-1);
+        }
     }
 
     private void performHealing() {
@@ -450,11 +458,10 @@ public class Battle extends JPanel implements ActionListener {
             showHealing.add(10);
             showHealing.add(100 + (i * 10)); 
         }
-        if (playersArray[turn].getHealingStacks() > 0) {
-            playersArray[turn].setHealingStacks(-1);
-        }
+    }
 
-        
+    private int performBleed() {
+        return (playersArray[altTurn].getBleedStacks()*10);
     }
 
 }
