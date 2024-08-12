@@ -9,8 +9,9 @@ import java.util.ArrayList;
 
 import javax.imageio.ImageIO;
 
-public class Chest extends Interactible {
+public class Chest extends Interactable {
 
+    // Width and height of every chest
     private static final int WIDTH = 2;
     private static final int HEIGHT = 2;
 
@@ -18,18 +19,33 @@ public class Chest extends Interactible {
     private static final String IMAGE_PATH_CHEST_STAND = "objects/chest-stand.png";
     private static final String CHEST_COORDINATES_PATH = "tile_game/maps/chest-coordinates.csv";
 
+    // Coordinates of the chest stand
     private static final int chestStandX = 30;
     private static final int chestStandY = 2;
 
     private static BufferedImage chestStandImage;
 
-    static ArrayList<Chest> chests = new ArrayList<>();
-    public static int giveCards = 0;
+    // Public list of all chests
+    public static ArrayList<Chest> chests = new ArrayList<>();
 
+    // Total amount of cards to give
+    private static int giveCards = 0;
+
+    // Track whether or not a chest has been opened and whether or not it needs orbs
+    // to open
     private boolean isOpened = false;
     private boolean isObjective = false;
 
+    // Track whether or not to indicate that a card is being added. This should be
+    // true when a chest is opened and become false once a key is pressed.
+    private static boolean displayWindow = false;
+
     public static void loadChests() {
+
+        // reads in chests in format: x,y,isObjective
+        // with "objective" to indicate that a chest is an objective chest (needs orbs
+        // to open)
+        // for each chest on each line
 
         try {
 
@@ -37,9 +53,9 @@ public class Chest extends Interactible {
             BufferedReader reader = new BufferedReader(new FileReader(CHEST_COORDINATES_PATH));
 
             while ((line = reader.readLine()) != null) {
-                
+
                 String[] parts = line.split(",");
-                
+
                 int x = Integer.parseInt(parts[0]);
                 int y = Integer.parseInt(parts[1]);
                 boolean isObjective = parts[2].equals("objective");
@@ -56,8 +72,8 @@ public class Chest extends Interactible {
             e.printStackTrace();
         }
     }
-    
-    public void loadImages() {
+
+    private void loadImages() {
 
         super.loadImages(IMAGE_PATH);
     }
@@ -73,35 +89,33 @@ public class Chest extends Interactible {
         }
     }
 
-    public Chest(int x, int y) {
+    private Chest(int x, int y) {
 
         super(x, y, WIDTH, HEIGHT);
-
     }
 
-    static boolean checkCollision(PlayerMovable player, InteractivePanel gamePanel) {
-
-        // Get current tile
-        int currentTileY = player.getCurrentTileY();
-        int currentTileX = player.getCurrentTileX();
+    // Return true to display "Press space to open". Otherwise return false
+    public static boolean checkCollision(int currentTileX, int currentTileY, InteractivePanel gamePanel) {
 
         for (Chest chest : chests) {
 
+            // check if player is in contact with bottom half of chest
             if (chest.tileY + 1 == currentTileY) {
                 if (chest.tileX == currentTileX || chest.tileX + 1 == currentTileX) {
 
                     if (chest.isObjective && !OrbStand.checkCompletion()) {
-                        
+
                         return false;
                     }
 
-                    if (gamePanel.getKeyHandler().isKeyPressed(KeyEvent.VK_SPACE) && !chest.isOpened) {
-                        
-                        System.out.println("You opened a chest");
+                    // Add a card if spacebar is pressed at a chest
+                    if (gamePanel.isKeyPressed(KeyEvent.VK_SPACE) && !chest.isOpened) {
+
+                        displayWindow = true;
                         chest.isOpened = true;
                         giveCards += 1;
                     }
-                    return true;
+                    return !chest.isOpened;
                 }
             }
         }
@@ -115,4 +129,21 @@ public class Chest extends Interactible {
                 InteractivePanel.getTileSize() * WIDTH,
                 InteractivePanel.getTileSize() * HEIGHT + InteractivePanel.getTileSize(), null);
     }
+
+    public static boolean isDisplayWindow() {
+        return displayWindow;
+    }
+
+    public static void setDisplayWindow(boolean displayWindow) {
+        Chest.displayWindow = displayWindow;
+    }
+
+    public static int getGiveCards() {
+        return giveCards;
+    }
+
+    public static void setGiveCards(int giveCards) {
+        Chest.giveCards = giveCards;
+    }
+
 }

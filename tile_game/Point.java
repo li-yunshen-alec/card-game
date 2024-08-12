@@ -1,7 +1,5 @@
 package tile_game;
 
-import java.util.Objects;
-
 class Point {
 
     int x, y;
@@ -20,10 +18,5 @@ class Point {
 
         Point point = (Point) o;
         return x == point.x && y == point.y;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(x, y);
     }
 }

@@ -5,8 +5,6 @@ import main.Cutscene1;
 import main.FontFactory;
 import main.Main;
 import tile_game.InteractiveEnemy;
-import tile_game.InteractivePanel;
-
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
@@ -20,13 +18,13 @@ public class Battle extends JPanel implements ActionListener {
     private Battler playersArray[] = new Battler[2];
 
     private int round = 0; // player goes first in any battle
-    private int displayedRound = 50;  // if this reaches zero and the game is not won, the player loses
+    private int displayedRound = 50; // if this reaches zero and the game is not won, the player loses
     private int turn = 5; // is either 0 or 1 to signify if it is the player or enemys turn to act
     private int altTurn; // the party that is not currently acting
     private boolean isWon = false;
 
     // would probably be more acurate to call these ticks rather than frames
-    private int FPS = 300; // frames per second (use this to change speed cuz some animations are tied to
+    private int FPS = 60; // frames per second (use this to change speed cuz some animations are tied to
                           // stuff)
     private int framesPerTurn = 60;
     private int frameCounter = 0;
@@ -197,7 +195,7 @@ public class Battle extends JPanel implements ActionListener {
         // display the number of rounds left
         g.setFont(Main.Lexend60);
         g.setColor(Color.WHITE);
-        g.drawString("" + displayedRound, Main.WIDTH/2-30, 660);
+        g.drawString("" + displayedRound, Main.WIDTH / 2 - 30, 660);
     }
 
     private void performAttack(Cards attackerCard, Battler defender) {
@@ -394,9 +392,9 @@ public class Battle extends JPanel implements ActionListener {
                         if (playersArray[altTurn] == player || displayedRound == 0) {
 
                             // sets the enemy to not being in battle
-                            for (int i = 0; i < InteractiveEnemy.InteractiveEnemies.size(); i++) {
-                                if (InteractiveEnemy.InteractiveEnemies.get(i).isInBattle()) {
-                                    InteractiveEnemy.InteractiveEnemies.get(i).setInBattle(false);
+                            for (int i = 0; i < InteractiveEnemy.enemies.size(); i++) {
+                                if (InteractiveEnemy.enemies.get(i).isInBattle()) {
+                                    InteractiveEnemy.enemies.get(i).setInBattle(false);
                                     break;
                                 }
                             }
@@ -407,13 +405,19 @@ public class Battle extends JPanel implements ActionListener {
                             // InteractiveEnemy.InteractiveEnemies.clear();
                             Enemy.maxHp = (DeckBuildPanel.difficulty * 100);
                         } else {
-                            Main.showCard("Map");
 
-                            // removes the enemy that we defeated
-                            for (int i = 0; i < InteractiveEnemy.InteractiveEnemies.size(); i++) {
-                                if (InteractiveEnemy.InteractiveEnemies.get(i).isInBattle()) {
-                                    InteractiveEnemy.InteractiveEnemies.remove(i);
-                                    break;
+                            if (InteractiveEnemy.enemies.size() == 0) {
+
+                                Main.showCard("winScreen");
+                            } else {
+                                Main.showCard("Map");
+
+                                // removes the enemy that we defeated
+                                for (int i = 0; i < InteractiveEnemy.enemies.size(); i++) {
+                                    if (InteractiveEnemy.enemies.get(i).isInBattle()) {
+                                        InteractiveEnemy.enemies.remove(i);
+                                        break;
+                                    }
                                 }
                             }
                         }

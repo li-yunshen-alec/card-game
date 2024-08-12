@@ -5,13 +5,13 @@ import java.awt.image.BufferedImage;
 
 import javax.imageio.ImageIO;
 
-public class Interactible {
+public abstract class Interactable {
 
     protected int tileX, tileY;
     protected final int WIDTH, HEIGHT;
     protected BufferedImage image;
 
-    public Interactible(int tileX, int tileY, int width, int height) {
+    public Interactable(int tileX, int tileY, int width, int height) {
 
         this.tileX = tileX;
         this.tileY = tileY;

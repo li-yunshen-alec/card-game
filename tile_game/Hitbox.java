@@ -2,6 +2,8 @@ package tile_game;
 
 public class Hitbox {
 
+    // CenterX and centerY represent the center coordinates of each hitbox. This is
+    // to ensure accuracy when evaluating what tile a hitbox is on.
     private int top, left, width, height, bot, right, centerX, centerY;
 
     public Hitbox(int top, int left, int width, int height) {
@@ -9,6 +11,7 @@ public class Hitbox {
         update(top, left, width, height);
     }
 
+    // Update hitbox with updated values
     public void update(int top, int left, int width, int height) {
 
         this.top = top;
@@ -22,6 +25,7 @@ public class Hitbox {
         centerY = top + height / 2;
     }
 
+    // Return true if two rectangular hitboxes intersect
     public boolean intersects(Hitbox other) {
 
         if (other.bot < top || other.top > bot) {

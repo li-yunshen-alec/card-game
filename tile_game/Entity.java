@@ -2,7 +2,7 @@ package tile_game;
 
 import java.awt.image.BufferedImage;
 
-public class Entity {
+public abstract class Entity {
 
     protected int x, y;
     protected int speed;
