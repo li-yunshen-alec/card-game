@@ -42,6 +42,9 @@ public class Battle extends JPanel implements ActionListener {
     private int xPos = 0;  // for the damage messages
     private int xPos2 = 0; // for the healing messages
 
+    Cards[] originalHand; // this is soley here because I need to know where the cards where in the array
+                          // so that I can move them back after battle
+                          
     private JLabel instructionLabel;
 
     private JButton doubleSpeed;
@@ -52,12 +55,8 @@ public class Battle extends JPanel implements ActionListener {
     // images
     private ImageIcon background = new ImageIcon("images/background.jpg");
     private ImageIcon backgroundOverlay = new ImageIcon("images/backgroundoverlay.png");
-    // private ImageIcon vulnerableIcon = new
-    // ImageIcon("images/VulnerableIcon.png");
-    // private ImageIcon strenghtIcon = new ImageIcon("images/strenghtIcon.png");
-    // private ImageIcon shieldIcon = new ImageIcon("images/shieldIcon.png");
-    Cards[] originalHand; // this is soley here because I need to know where the cards where in the array
-                          // so that I can move them back after battle
+   
+    
 
     // ------------------------------------------------------------------------------------------
 
@@ -124,17 +123,9 @@ public class Battle extends JPanel implements ActionListener {
             battler.drawStatus(g);
         }
 
-        // if (damage > 0) {
-        // g.setColor(Color.red);
-        // g.setFont(Main.Lexend18);
-        // if (turn == 0)
-        // g.drawString("-" + damage, 880, HEALTHBAR_Y+10);
-        // else
-        // g.drawString("-" + damage, 350, HEALTHBAR_Y+10);
-        // }
-        // System.out.println(showDamage);
+     
         g.setColor(Color.red);
-        g.setFont(Main.Lexend30);
+        g.setFont(FontFactory.loadFont("fonts/lexend/static/Lexend-Regular.ttf", 30));
         for (int i = 0; i < showDamage.size() - 1; i = i + 2) {
             if (turn == 0)
                 xPos = 860;
@@ -152,7 +143,7 @@ public class Battle extends JPanel implements ActionListener {
             }
         }
         g.setColor(Color.green);
-        g.setFont(Main.Lexend30);
+        g.setFont(FontFactory.loadFont("fonts/lexend/static/Lexend-Regular.ttf", 30));
         for (int i = 0; i < showHealing.size() - 1; i = i + 2) {
             if (turn == 1)
                 xPos2 = 810;
@@ -321,24 +312,13 @@ public class Battle extends JPanel implements ActionListener {
                     // turn. turn is 0 or 1 to make using an array easier
 
                     damage = 0;
-
                     showDamage.clear();
                     showHealing.clear();
 
                     if (playersArray[altTurn].getHealth() <= 0) {
-                        System.out.println(playersArray[altTurn] + "loses!");
+                        //System.out.println(playersArray[altTurn] + "loses!");
                         isWon = true;
 
-                        // resets the location of the cards so they appear in the right spot in the next
-                        // battle
-                        /*
-                         * for (int i = 0; i < player.hand.length; i++) {
-                         * if (player.hand[i] != null) {
-                         * player.hand[i].setX(i * 130 + 120);
-                         * player.hand[i].setY(260);
-                         * }
-                         * }
-                         */
 
                         // resets the location of the cards so they appear in the right spot in the next
                         // battle
@@ -408,6 +388,7 @@ public class Battle extends JPanel implements ActionListener {
                             Main.showCard("lostScreen");
                             DeckBuildPanel.difficulty = 5;
                             Cutscene1.removeGame();
+                            InteractiveEnemy.InteractiveEnemies.clear();
                             Enemy.maxHp = (DeckBuildPanel.difficulty * 100);
                         }
                         else {
@@ -419,9 +400,7 @@ public class Battle extends JPanel implements ActionListener {
                                     InteractiveEnemy.InteractiveEnemies.remove(i);
                             }
                         }
-                        //InteractiveEnemy.setInBattle(false);
-                        
-                        // InteractiveEnemy.inBattle = false;
+
                     }
                 }
             }
